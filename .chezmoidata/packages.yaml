@@ -1,0 +1,8 @@
+packages:
+  common:
+     - git
+  fedora:
+    copr:
+     - scottames/ghostty
+    dnf:
+     - ghostty
