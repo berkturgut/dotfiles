@@ -1,8 +1,6 @@
 packages:
   common:
-     - git
-  fedora:
-    copr:
-     - scottames/ghostty
-    dnf:
-     - ghostty
+    - git
+    - zsh
+    - curl
+    - ca-certificates

@@ -21,6 +21,3 @@ alias rm='rm -i'
 alias cp='cp -i'
 alias mv='mv -i'
 
-# Ghostty WSLg Fix
-export XDG_RUNTIME_DIR=/mnt/wslg/runtime-dir
-export GDK_BACKEND=wayland

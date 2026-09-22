@@ -1,0 +1,53 @@
+{{ if eq .chezmoi.os "linux" -}}
+#!/bin/bash
+
+# -------------------------------------------------------------------
+# Script: 15_install_ghostty
+# Description: Dynamically detects OS codename & arch, installs Ghostty
+# -------------------------------------------------------------------
+
+if command -v ghostty &> /dev/null; then
+    echo "Ghostty is already installed."
+    exit 0
+fi
+
+# Configure WSLg Wayland sockets for systemd if running inside WSL
+if [ -d "/mnt/wslg/runtime-dir" ]; then
+    echo "Configuring WSLg Wayland sockets..."
+    sudo mkdir -p /etc/tmpfiles.d
+    cat << 'EOF' | sudo tee /etc/tmpfiles.d/wslg.conf > /dev/null
+L+ /run/user/1000/wayland-0 - - - - /mnt/wslg/runtime-dir/wayland-0
+L+ /run/user/1000/wayland-0.lock - - - - /mnt/wslg/runtime-dir/wayland-0.lock
+EOF
+    sudo systemd-tmpfiles --create 2>/dev/null || true
+fi
+
+echo "Detecting compatible Ghostty release for {{ .chezmoi.osRelease.versionCodename }} ({{ .chezmoi.arch }})..."
+
+CODENAME="{{ .chezmoi.osRelease.versionCodename }}"
+ARCH="{{ .chezmoi.arch }}"
+
+# Fetch latest release download URL matching architecture and codename
+LATEST_DEB=$(curl -s https://api.github.com/repos/mkasberg/ghostty-ubuntu/releases/latest \
+  | grep -oE "https://[^\"]+ghostty[^\"]+_${ARCH}_${CODENAME}\.deb" \
+  | head -n 1)
+
+# Fallback to general release if specific codename not found
+if [ -z "$LATEST_DEB" ]; then
+    LATEST_DEB=$(curl -s https://api.github.com/repos/mkasberg/ghostty-ubuntu/releases/latest \
+      | grep -oE "https://[^\"]+ghostty[^\"]+_${ARCH}_[a-zA-Z0-9\.]+\.deb" \
+      | head -n 1)
+fi
+
+if [ -n "$LATEST_DEB" ]; then
+    echo "Downloading Ghostty from: $LATEST_DEB"
+    TMP_DEB=$(mktemp --suffix=.deb)
+    curl -fsSL "$LATEST_DEB" -o "$TMP_DEB"
+    sudo apt-get install -y "$TMP_DEB"
+    rm -f "$TMP_DEB"
+    echo "Ghostty installed successfully."
+else
+    echo "Warning: Could not find prebuilt Ghostty deb package for ${CODENAME} (${ARCH})."
+fi
+
+{{ end -}}

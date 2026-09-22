@@ -1,0 +1,22 @@
+{{ if and (eq .chezmoi.os "linux") (hasKey .packages "common") -}}
+#!/bin/bash
+
+# -------------------------------------------------------------------
+# Script: 10_install_apt
+# Description: Installs standard packages using apt-get
+# -------------------------------------------------------------------
+
+if ! command -v apt-get &> /dev/null; then
+    exit 0
+fi
+
+{{ $packages := .packages.common -}}
+{{ if hasKey .packages "apt" -}}
+  {{ $packages = concat $packages .packages.apt -}}
+{{ end -}}
+
+echo "Updating APT cache and installing packages: {{ $packages | join " " }}..."
+sudo apt-get update -y
+sudo apt-get install -y {{ $packages | join " " }}
+
+{{ end -}}

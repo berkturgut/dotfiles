@@ -1,0 +1,21 @@
+{{ if eq .chezmoi.os "linux" -}}
+#!/bin/bash
+
+# -------------------------------------------------------------------
+# Script: 20_install_ohmyzsh
+# Description: Installs Oh-My-Zsh and sets Zsh as default shell
+# -------------------------------------------------------------------
+
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+    echo "Installing Oh-My-Zsh..."
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+fi
+
+# Set Zsh as default shell
+ZSH_PATH=$(which zsh)
+if [ "$SHELL" != "$ZSH_PATH" ]; then
+    echo "Changing default shell to Zsh..."
+    sudo chsh -s "$ZSH_PATH" "$USER"
+fi
+
+{{ end -}}

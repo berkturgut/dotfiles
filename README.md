@@ -1,5 +1,7 @@
 # Dotfiles
 
+Clean, minimal, declarative dotfiles managed with [chezmoi](https://www.chezmoi.io/).
+
 ## 🚀 Quick Start
 ```bash
 sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply <your-github-username>
@@ -7,11 +9,17 @@ sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply <your-github-username>
 
 ## 📦 Packages
 
-**Common (All OS):**
-- `git`
+Managed centrally via `.chezmoidata/packages.yaml`:
 
-**Fedora (fedoraremix):**
-- `ghostty` (via COPR `scottames/ghostty`)
+- **Common:**
+  - `git`
+  - `zsh`
+  - `curl`
+  - `ca-certificates`
 
-## 🛠️ Configurations Applied
-- **Ghostty WSLg Integration:** Injects `XDG_RUNTIME_DIR` and `GDK_BACKEND` variables into `.bashrc` and overrides the local `.desktop` shortcut (`~/.local/share/applications/com.mitchellh.ghostty.desktop`) to resolve Wayland/X11 rendering errors when launching directly from Windows Start Menu.
+## 🛠️ Architecture & Scripts
+- `run_onchange_before_10_install_apt.sh.tmpl`: Installs clean standard packages via `apt-get`.
+- `run_once_before_15_install_ghostty.sh.tmpl`: Dynamically detects distribution codename (Trixie, Bookworm, Noble, etc.) and architecture (amd64, arm64) to install the exact native Ghostty build and configure WSLg Wayland sockets.
+- `run_once_before_20_install_ohmyzsh.sh.tmpl`: Installs Oh-My-Zsh (unattended) and sets Zsh as the default login shell.
+- **Shell:** Zsh + Oh-My-Zsh (`robbyrussell` theme)
+- **Terminal:** Ghostty (GPU-accelerated via native WSLg)
