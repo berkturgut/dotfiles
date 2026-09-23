@@ -18,11 +18,13 @@ sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply <your-github-username>
 ### Dynamic / Standalone Tools (via Dedicated Scripts)
 - `ghostty`: GPU-accelerated terminal emulator (dynamically matched to distro codename & architecture)
 - `oh-my-zsh`: Community-driven Zsh configuration framework
+- `claude-code`: Official Claude Code CLI standalone installer
 
 ## 🛠️ Architecture & Scripts
 - `run_onchange_before_10_install_apt.sh.tmpl`: Automatically installs standard APT packages defined in `packages.yaml`.
 - `run_once_before_15_install_ghostty.sh.tmpl`: Detects OS codename (Trixie, Bookworm, Noble, etc.) and architecture (amd64, arm64), downloads the matching native Ghostty `.deb`, and configures WSLg Wayland sockets.
 - `run_once_before_20_install_ohmyzsh.sh.tmpl`: Installs Oh-My-Zsh unattended and sets Zsh as the default login shell.
+- `run_once_after_30_install_claude.sh`: Installs Claude Code standalone CLI via the official Anthropic installation script.
 
 ## 🖥️ GUI & WSLg Configuration
 When running inside WSL2, shell profiles (`~/.zshrc` and `~/.bashrc`) automatically detect `/mnt/wslg` and export the required Wayland/X11 environment variables:
